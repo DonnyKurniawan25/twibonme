@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_settings.site_name }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Add padding to body for bottom nav on mobile */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 64px;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-gray-50 text-gray-900 flex flex-col min-h-screen">
+    <!-- Top Navigation - Desktop & Mobile Header -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="flex items-center gap-2">
+                        {% load static %}
+                        {% if site_settings.site_logo %}
+                            <img src="{{ site_settings.site_logo.url }}" alt="{{ site_settings.site_name }}" class="h-8 sm:h-10 w-auto">
+                        {% else %}
+                            <img src="{% static 'images/logo.png' %}" alt="{{ site_settings.site_name }}" class="h-8 sm:h-10 w-auto">
+                        {% endif %}
+                        <span class="text-lg sm:text-2xl font-bold text-blue-700 truncate max-w-[200px] sm:max-w-none">
+                            {{ site_settings.site_name }}
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if user.is_staff %}
+                    <a href="{% url 'dashboard' %}" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                        Dashboard
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'create_campaign' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        + Buat Campaign
+                    </a>
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'logout' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                            Logout
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                        Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer - Hidden on Mobile -->
+    <footer class="bg-white border-t mt-auto hidden md:block">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">&copy; {% now "Y" %} Kabupaten Lombok Barat. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg">
+        <div class="grid grid-cols-4 h-16">
+            <!-- Home -->
+            <a href="{% url 'home' %}" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600 transition-colors {% if request.path == '/' %}text-blue-600{% endif %}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="text-xs mt-1">Beranda</span>
+            </a>
+
+            <!-- Explore - Jelajahi semua campaign -->
+            <a href="{% url 'explore' %}" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600 transition-colors {% if 'explore' in request.path %}text-blue-600{% endif %}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span class="text-xs mt-1">Jelajahi</span>
+            </a>
+
+            <!-- Create Campaign Button -->
+            <a href="{% url 'create_campaign' %}" class="flex flex-col items-center justify-center bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded-t-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span class="text-xs mt-1">Buat</span>
+            </a>
+
+            <!-- Login/Logout/Dashboard -->
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                <a href="{% url 'dashboard' %}" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span class="text-xs mt-1">Admin</span>
+                </a>
+                {% else %}
+                <form action="{% url 'logout' %}" method="post" class="h-full">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full h-full flex flex-col items-center justify-center text-gray-600 hover:text-blue-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                        <span class="text-xs mt-1">Logout</span>
+                    </button>
+                </form>
+                {% endif %}
+            {% else %}
+            <a href="{% url 'register' %}" class="flex flex-col items-center justify-center text-gray-600 hover:text-blue-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                <span class="text-xs mt-1">Daftar</span>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

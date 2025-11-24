@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-blue-600 px-6 py-8 text-white">
+            <div class="flex items-center">
+                <div class="h-20 w-20 rounded-full bg-white flex items-center justify-center text-3xl">
+                    👤
+                </div>
+                <div class="ml-6">
+                    <h1 class="text-2xl font-bold">{{ user.username }}</h1>
+                    <p class="text-blue-100">Administrator</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Dashboard</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <p class="text-sm text-blue-600 font-medium">Total Campaigns</p>
+                    <p class="text-2xl font-bold text-blue-900 mt-1">
+                        <!-- We can inject this context later if needed, for now just static or simple -->
+                        Manage
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <a href="{% url 'create_campaign' %}"
+                    class="block w-full text-center bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    Buat Campaign Baru
+                </a>
+                <a href="{% url 'home' %}"
+                    class="block w-full text-center bg-white text-gray-700 border border-gray-300 px-4 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
